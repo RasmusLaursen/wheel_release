@@ -11,7 +11,7 @@ env:
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
   BUNDLE_VAR_environment: dev
   BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup).dev.service_principal }}
-  VOLUME_CATALOG: raw_dev
+  VOLUME_CATALOG: shared
   VOLUME_SCHEMA: bundle_artifacts
   VOLUME_NAME: wheel_release
 
