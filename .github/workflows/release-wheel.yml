@@ -90,12 +90,15 @@ jobs:
           databricks bundle validate -t shared \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
+            --var volume_name=${VOLUME_NAME} \ 
+            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
+            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
           databricks bundle deploy -t shared \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
-
+            --var volume_name=${VOLUME_NAME} \
+            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
+            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
       - name: Build release wheel
         working-directory: wheel_test
         shell: bash
@@ -133,9 +136,13 @@ jobs:
             --var release_version=${RELEASE_VERSION} \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
+            --var volume_name=${VOLUME_NAME} \
+            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
+            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
           databricks bundle deploy -t ${DEPLOY_ENVIRONMENT} \
             --var release_version=${RELEASE_VERSION} \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
+            --var volume_name=${VOLUME_NAME}\
+            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
+            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
