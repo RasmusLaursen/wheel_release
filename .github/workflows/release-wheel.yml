@@ -9,6 +9,7 @@ env:
   DEPLOY_ENVIRONMENT: prod
   DATABRICKS_HOST: ${{ vars.workspace_setup && fromJson(vars.workspace_setup).prod.host || secrets.DATABRICKS_HOST }}
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+  DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
   BUNDLE_VAR_environment: prod
   BUNDLE_VAR_run_as: ${{ vars.workspace_setup && fromJson(vars.workspace_setup).prod.service_principal || '' }}
   VOLUME_CATALOG: raw_dev
@@ -36,6 +37,26 @@ jobs:
 
       - name: Set up Databricks CLI
         uses: databricks/setup-cli@main
+
+      - name: Configure Databricks authentication
+        shell: bash
+        run: |
+          if [ -n "${DATABRICKS_TOKEN:-}" ]; then
+            echo "Using PAT authentication."
+            exit 0
+          fi
+
+          CLIENT_ID="${BUNDLE_VAR_run_as:-$DATABRICKS_CLIENT_ID}"
+
+          if [ -z "$CLIENT_ID" ]; then
+            echo "No DATABRICKS_TOKEN found, and no client ID available for OIDC."
+            echo "Set either secret DATABRICKS_TOKEN or DATABRICKS_CLIENT_ID (or workspace_setup prod.service_principal)."
+            exit 1
+          fi
+
+          echo "DATABRICKS_CLIENT_ID=$CLIENT_ID" >> "$GITHUB_ENV"
+          echo "DATABRICKS_AUTH_TYPE=github-oidc" >> "$GITHUB_ENV"
+          echo "Using GitHub OIDC authentication."
 
       - name: Derive release version
         shell: bash
