@@ -7,10 +7,10 @@ on:
 
 env:
   DEPLOY_ENVIRONMENT: dev
-  DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup).prod.host }}
+  DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup).dev.host }}
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
   BUNDLE_VAR_environment: dev
-  BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup).prod.service_principal }}
+  BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup).dev.service_principal }}
   VOLUME_CATALOG: raw_dev
   VOLUME_SCHEMA: bundle_artifacts
   VOLUME_NAME: wheel_release
@@ -90,15 +90,11 @@ jobs:
           databricks bundle validate -t shared \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME} \ 
-            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
-            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+            --var volume_name=${VOLUME_NAME}
           databricks bundle deploy -t shared \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME} \
-            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
-            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+            --var volume_name=${VOLUME_NAME}
       - name: Build release wheel
         working-directory: wheel_test
         shell: bash
@@ -136,13 +132,9 @@ jobs:
             --var release_version=${RELEASE_VERSION} \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME} \
-            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
-            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+            --var volume_name=${VOLUME_NAME}
           databricks bundle deploy -t ${DEPLOY_ENVIRONMENT} \
             --var release_version=${RELEASE_VERSION} \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}\
-            --var DATABRICKS_HOST=${DATABRICKS_HOST} \
-            --var DATABRICKS_TOKEN=${DATABRICKS_TOKEN}
+            --var volume_name=${VOLUME_NAME}
