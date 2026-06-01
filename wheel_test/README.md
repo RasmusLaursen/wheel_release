@@ -100,7 +100,7 @@ The release workflow in [.github/workflows/release-wheel.yml](../.github/workflo
 5. Uploads the built wheel into that folder.
 6. Deploys the app bundle with the same release version.
 
-The workflow defaults to the shared volume path `raw_dev.bundle_artifacts.wheel_release`.
+The workflow defaults to the shared volume path `shared.bundle_artifacts.wheel_release`.
 If you need a different location, update the workflow env values in [.github/workflows/release-wheel.yml](../.github/workflows/release-wheel.yml).
 
 The workflow expects these GitHub secrets:
