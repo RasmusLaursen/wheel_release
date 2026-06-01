@@ -6,10 +6,10 @@ on:
       - published
 
 env:
-  DEPLOY_ENVIRONMENT: prod
+  DEPLOY_ENVIRONMENT: dev
   DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup).prod.host }}
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-  BUNDLE_VAR_environment: prod
+  BUNDLE_VAR_environment: dev
   BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup).prod.service_principal }}
   VOLUME_CATALOG: raw_dev
   VOLUME_SCHEMA: bundle_artifacts
