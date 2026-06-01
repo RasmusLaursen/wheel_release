@@ -116,13 +116,13 @@ jobs:
         run: |
           databricks fs mkdir "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}"
 
-      - name: Upload wheel to release folder
-        working-directory: wheel_test
-        shell: bash
-        run: |
-          databricks fs cp "${WHEEL_PATH}" \
-            "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}/${WHEEL_FILE}" \
-            --overwrite
+      # - name: Upload wheel to release folder
+      #   working-directory: wheel_test
+      #   shell: bash
+      #   run: |
+      #     databricks fs cp "${WHEEL_PATH}" \
+      #       "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}/${WHEEL_FILE}" \
+      #       --overwrite
 
       - name: Deploy app bundle
         working-directory: wheel_test
