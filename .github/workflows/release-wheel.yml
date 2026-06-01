@@ -6,8 +6,11 @@ on:
       - published
 
 env:
-  DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+  DEPLOY_ENVIRONMENT: prod
+  DATABRICKS_HOST: ${{ vars.workspace_setup && fromJson(vars.workspace_setup).prod.host || secrets.DATABRICKS_HOST }}
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+  BUNDLE_VAR_environment: prod
+  BUNDLE_VAR_run_as: ${{ vars.workspace_setup && fromJson(vars.workspace_setup).prod.service_principal || '' }}
   VOLUME_CATALOG: raw_dev
   VOLUME_SCHEMA: bundle_artifacts
   VOLUME_NAME: wheel_release
@@ -17,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
 
     steps:
       - name: Check out repository
@@ -126,12 +130,12 @@ jobs:
         working-directory: wheel_test
         shell: bash
         run: |
-          databricks bundle validate -t prod \
+          databricks bundle validate -t ${DEPLOY_ENVIRONMENT} \
             --var release_version=${RELEASE_VERSION} \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
             --var volume_name=${VOLUME_NAME}
-          databricks bundle deploy -t prod \
+          databricks bundle deploy -t ${DEPLOY_ENVIRONMENT} \
             --var release_version=${RELEASE_VERSION} \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
