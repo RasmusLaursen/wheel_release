@@ -1,0 +1,8 @@
+resources:
+  schemas:
+    release_artifacts_schema:
+      catalog_name: ${var.volume_catalog}
+      name: ${var.volume_schema}
+      comment: Shared schema for Databricks wheel release artifacts.
+      lifecycle:
+        prevent_destroy: true

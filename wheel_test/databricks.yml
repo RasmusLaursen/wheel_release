@@ -1,0 +1,58 @@
+# This is a Databricks asset bundle definition for wheel_test.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: wheel_test
+  databricks_cli_version: ">= 0.236.0"
+  uuid: 8d81f940-ddb1-4128-818e-6d2b45e985e3
+
+include:
+  - resources/*.yml
+
+artifacts:
+  python_artifact:
+    type: whl
+    build: uv build --wheel
+
+# Variable declarations. These variables are assigned in the dev/prod targets below.
+variables:
+  catalog:
+    description: The catalog to use
+  schema:
+    description: The schema to use
+  release_version:
+    description: Release version used for the deployed wheel path
+    default: 0.0.1
+  volume_catalog:
+    description: Catalog that contains the shared release volume
+    default: shared
+  volume_schema:
+    description: Schema that contains the shared release volume
+    default: bundle_artifacts
+  volume_name:
+    description: Volume that stores released wheel files
+    default: wheel_release
+
+targets:
+  user:
+    mode: development
+    workspace:
+      host: https://dbc-e3d11267-f1e6.cloud.databricks.com
+      root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${workspace.current_user.short_name}/artifacts
+    variables:
+      catalog: shared
+      schema: bundle_artifacts
+      release_version: ${workspace.current_user.short_name}
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-e3d11267-f1e6.cloud.databricks.com
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${var.release_version}/bundle-artifacts
+    variables:
+      catalog: shared
+      schema: bundle_artifacts

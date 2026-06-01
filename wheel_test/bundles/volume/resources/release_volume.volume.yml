@@ -1,0 +1,10 @@
+resources:
+  volumes:
+    release_wheel_volume:
+      catalog_name: ${var.volume_catalog}
+      schema_name: ${var.volume_schema}
+      name: ${var.volume_name}
+      comment: Shared volume for release-versioned Databricks wheel artifacts.
+      volume_type: MANAGED
+      lifecycle:
+        prevent_destroy: true

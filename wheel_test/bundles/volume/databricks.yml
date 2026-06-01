@@ -1,0 +1,24 @@
+bundle:
+  name: wheel_test_volume
+  databricks_cli_version: ">= 0.236.0"
+
+include:
+  - resources/*.yml
+
+variables:
+  volume_catalog:
+    description: Catalog that contains the shared release volume
+    default: shared
+  volume_schema:
+    description: Schema that contains the shared release volume
+    default: bundle_artifacts
+  volume_name:
+    description: Volume that stores released wheel files
+    default: wheel_release
+
+targets:
+  shared:
+    mode: production
+    default: true
+    workspace:
+      host: https://dbc-e3d11267-f1e6.cloud.databricks.com
