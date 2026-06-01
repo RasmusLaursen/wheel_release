@@ -22,4 +22,3 @@ targets:
     default: true
     workspace:
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
-      host: https://dbc-e3d11267-f1e6.cloud.databricks.com

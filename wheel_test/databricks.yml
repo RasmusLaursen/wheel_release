@@ -36,7 +36,6 @@ targets:
   user:
     mode: development
     workspace:
-      host: https://dbc-e3d11267-f1e6.cloud.databricks.com
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
       artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${workspace.current_user.short_name}/artifacts
     variables:
@@ -51,7 +50,6 @@ targets:
     mode: production
     default: true
     workspace:
-      host: https://dbc-e3d11267-f1e6.cloud.databricks.com
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
       artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${var.release_version}/bundle-artifacts
     variables:
