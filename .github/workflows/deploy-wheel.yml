@@ -1,0 +1,132 @@
+name: Deploy wheel_test
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'wheel_test/**'
+      - '!wheel_test/tests/**'
+  workflow_dispatch:
+    inputs:
+      deploy_all:
+        description: 'Deploy all environments'
+        type: boolean
+        default: false
+      custom_selection:
+        description: 'Custom selection (comma-separated, e.g. "dev, prod")'
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: wheel-test-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version_gate:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
+      - name: Resolve wheel_test version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('wheel_test/pyproject.toml').open('rb'))['project']['version'])")
+          tag="v${version}"
+
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure release tag does not exist
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.version.outputs.tag }}"
+          git fetch --tags origin
+
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "Release tag ${tag} already exists. Bump wheel_test/pyproject.toml before merging." >&2
+            exit 1
+          fi
+
+  deploy_dev:
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.deploy_all == 'true' || contains(github.event.inputs.custom_selection, 'dev'))
+    uses: ./.github/workflows/deploy_bundle.yml
+    name: Deploy dev
+    with:
+      environment: dev
+      bundle_path: wheel_test
+    secrets: inherit
+
+  deploy_prod:
+    needs:
+      - version_gate
+    if: >
+      always() &&
+      (
+        (github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.version_gate.result == 'success') ||
+        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' && (github.event.inputs.deploy_all == 'true' || contains(github.event.inputs.custom_selection, 'prod')))
+      )
+    uses: ./.github/workflows/deploy_bundle.yml
+    name: Deploy prod
+    concurrency:
+      group: wheel-test-prod
+      cancel-in-progress: false
+    with:
+      environment: prod
+      bundle_path: wheel_test
+    secrets: inherit
+
+  publish_release:
+    needs:
+      - version_gate
+      - deploy_prod
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.version_gate.result == 'success' && needs.deploy_prod.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create release tag and GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${{ needs.version_gate.outputs.tag }}"
+          version="${{ needs.version_gate.outputs.version }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${tag}" -m "wheel_test ${version}" "${GITHUB_SHA}"
+          git push origin "refs/tags/${tag}"
+
+          gh release create "${tag}" \
+            --target "${GITHUB_SHA}" \
+            --title "wheel_test ${version}" \
+            --notes "wheel_test ${version} deployed to production."

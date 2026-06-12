@@ -1,140 +1,140 @@
-name: Release wheel to Databricks
+# name: Release wheel to Databricks
 
-on:
-  release:
-    types:
-      - published
+# on:
+#   release:
+#     types:
+#       - published
 
-env:
-  DEPLOY_ENVIRONMENT: dev
-  DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup).dev.host }}
-  DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-  BUNDLE_VAR_environment: dev
-  BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup).dev.service_principal }}
-  VOLUME_CATALOG: shared
-  VOLUME_SCHEMA: bundle_artifacts
-  VOLUME_NAME: wheel_release
+# env:
+#   DEPLOY_ENVIRONMENT: dev
+#   DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup).dev.host }}
+#   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+#   BUNDLE_VAR_environment: dev
+#   BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup).dev.service_principal }}
+#   VOLUME_CATALOG: shared
+#   VOLUME_SCHEMA: bundle_artifacts
+#   VOLUME_NAME: wheel_release
 
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+# jobs:
+#   release:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: read
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Check out repository
+#         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.11'
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v4
+#       - name: Set up uv
+#         uses: astral-sh/setup-uv@v4
 
-      - name: Set up Databricks CLI
-        uses: databricks/setup-cli@main
+#       - name: Set up Databricks CLI
+#         uses: databricks/setup-cli@main
 
-      - name: Derive release version
-        shell: bash
-        run: |
-          VERSION="${{ github.event.release.tag_name }}"
+#       - name: Derive release version
+#         shell: bash
+#         run: |
+#           VERSION="${{ github.event.release.tag_name }}"
 
-          VERSION="${VERSION#v}"
+#           VERSION="${VERSION#v}"
 
-          if [ -z "$VERSION" ]; then
-            echo "Release version could not be determined."
-            exit 1
-          fi
+#           if [ -z "$VERSION" ]; then
+#             echo "Release version could not be determined."
+#             exit 1
+#           fi
 
-          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+#           echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
 
-      - name: Validate release version format
-        shell: bash
-        run: |
-          VERSION="$RELEASE_VERSION"
-          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Release version must be in format x.y.z where x, y, z are numbers"
-            echo "Got: $VERSION"
-            exit 1
-          fi
-          echo "Version format is valid: $VERSION"
+#       - name: Validate release version format
+#         shell: bash
+#         run: |
+#           VERSION="$RELEASE_VERSION"
+#           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+#             echo "Release version must be in format x.y.z where x, y, z are numbers"
+#             echo "Got: $VERSION"
+#             exit 1
+#           fi
+#           echo "Version format is valid: $VERSION"
 
-      - name: Patch package version for release
-        shell: bash
-        run: |
-          python - <<'PY'
-          import os
-          import re
-          from pathlib import Path
+#       - name: Patch package version for release
+#         shell: bash
+#         run: |
+#           python - <<'PY'
+#           import os
+#           import re
+#           from pathlib import Path
 
-          path = Path("wheel_test/pyproject.toml")
-          text = path.read_text(encoding="utf-8")
-          version = os.environ["RELEASE_VERSION"]
-          updated, count = re.subn(
-              r'(?m)^version = "[^"]+"$',
-              f'version = "{version}"',
-              text,
-              count=1,
-          )
-          if count != 1:
-              raise SystemExit("Could not update version in pyproject.toml")
-          path.write_text(updated, encoding="utf-8")
-          PY
+#           path = Path("wheel_test/pyproject.toml")
+#           text = path.read_text(encoding="utf-8")
+#           version = os.environ["RELEASE_VERSION"]
+#           updated, count = re.subn(
+#               r'(?m)^version = "[^"]+"$',
+#               f'version = "{version}"',
+#               text,
+#               count=1,
+#           )
+#           if count != 1:
+#               raise SystemExit("Could not update version in pyproject.toml")
+#           path.write_text(updated, encoding="utf-8")
+#           PY
 
-      - name: Deploy shared volume bundle
-        working-directory: wheel_test/bundles/volume
-        shell: bash
-        run: |
-          databricks bundle validate -t shared \
-            --var volume_catalog=${VOLUME_CATALOG} \
-            --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
-          databricks bundle deploy -t shared \
-            --var volume_catalog=${VOLUME_CATALOG} \
-            --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
-      - name: Build release wheel
-        working-directory: wheel_test
-        shell: bash
-        run: |
-          rm -rf dist
-          uv build --wheel
-          WHEEL_PATH=$(find dist -maxdepth 1 -name '*.whl' | head -n 1)
+#       - name: Deploy shared volume bundle
+#         working-directory: wheel_test/bundles/volume
+#         shell: bash
+#         run: |
+#           databricks bundle validate -t shared \
+#             --var volume_catalog=${VOLUME_CATALOG} \
+#             --var volume_schema=${VOLUME_SCHEMA} \
+#             --var volume_name=${VOLUME_NAME}
+#           databricks bundle deploy -t shared \
+#             --var volume_catalog=${VOLUME_CATALOG} \
+#             --var volume_schema=${VOLUME_SCHEMA} \
+#             --var volume_name=${VOLUME_NAME}
+#       - name: Build release wheel
+#         working-directory: wheel_test
+#         shell: bash
+#         run: |
+#           rm -rf dist
+#           uv build --wheel
+#           WHEEL_PATH=$(find dist -maxdepth 1 -name '*.whl' | head -n 1)
 
-          if [ -z "$WHEEL_PATH" ]; then
-            echo "No wheel file was created."
-            exit 1
-          fi
+#           if [ -z "$WHEEL_PATH" ]; then
+#             echo "No wheel file was created."
+#             exit 1
+#           fi
 
-          echo "WHEEL_PATH=$WHEEL_PATH" >> "$GITHUB_ENV"
-          echo "WHEEL_FILE=$(basename "$WHEEL_PATH")" >> "$GITHUB_ENV"
+#           echo "WHEEL_PATH=$WHEEL_PATH" >> "$GITHUB_ENV"
+#           echo "WHEEL_FILE=$(basename "$WHEEL_PATH")" >> "$GITHUB_ENV"
 
-      - name: Create release folder in volume
-        shell: bash
-        run: |
-          databricks fs mkdir "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}"
+#       - name: Create release folder in volume
+#         shell: bash
+#         run: |
+#           databricks fs mkdir "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}"
 
-      # - name: Upload wheel to release folder
-      #   working-directory: wheel_test
-      #   shell: bash
-      #   run: |
-      #     databricks fs cp "${WHEEL_PATH}" \
-      #       "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}/${WHEEL_FILE}" \
-      #       --overwrite
+#       # - name: Upload wheel to release folder
+#       #   working-directory: wheel_test
+#       #   shell: bash
+#       #   run: |
+#       #     databricks fs cp "${WHEEL_PATH}" \
+#       #       "dbfs:/Volumes/${VOLUME_CATALOG}/${VOLUME_SCHEMA}/${VOLUME_NAME}/${RELEASE_VERSION}/${WHEEL_FILE}" \
+#       #       --overwrite
 
-      - name: Deploy app bundle
-        working-directory: wheel_test
-        shell: bash
-        run: |
-          databricks bundle validate -t ${DEPLOY_ENVIRONMENT} \
-            --var release_version=${RELEASE_VERSION} \
-            --var volume_catalog=${VOLUME_CATALOG} \
-            --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
-          databricks bundle deploy -t ${DEPLOY_ENVIRONMENT} \
-            --var release_version=${RELEASE_VERSION} \
-            --var volume_catalog=${VOLUME_CATALOG} \
-            --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
+#       - name: Deploy app bundle
+#         working-directory: wheel_test
+#         shell: bash
+#         run: |
+#           databricks bundle validate -t ${DEPLOY_ENVIRONMENT} \
+#             --var release_version=${RELEASE_VERSION} \
+#             --var volume_catalog=${VOLUME_CATALOG} \
+#             --var volume_schema=${VOLUME_SCHEMA} \
+#             --var volume_name=${VOLUME_NAME}
+#           databricks bundle deploy -t ${DEPLOY_ENVIRONMENT} \
+#             --var release_version=${RELEASE_VERSION} \
+#             --var volume_catalog=${VOLUME_CATALOG} \
+#             --var volume_schema=${VOLUME_SCHEMA} \
+#             --var volume_name=${VOLUME_NAME}

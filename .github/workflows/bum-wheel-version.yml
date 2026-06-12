@@ -1,0 +1,99 @@
+name: Validate wheel_test version bump
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - edited
+ 
+permissions:
+  contents: read
+ 
+concurrency:
+  group: wheel-test-version-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+ 
+jobs:
+  validate:
+    name: Validate wheel_test version bump
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+ 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+ 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+ 
+      - name: Validate version bump
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          uv run --with packaging python - <<'PY'
+          import os
+          import subprocess
+          import sys
+          import tomllib
+ 
+          from packaging.version import InvalidVersion, Version
+ 
+ 
+          def git_output(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True)
+ 
+ 
+          def project_version(pyproject_content: str) -> Version:
+              version = tomllib.loads(pyproject_content)["project"]["version"]
+              try:
+                  return Version(version)
+              except InvalidVersion as exc:
+                  raise SystemExit(f"Invalid project.version {version!r}: {exc}") from exc
+ 
+ 
+          base_sha = os.environ["BASE_SHA"]
+          changed_files = git_output("diff", "--name-only", f"{base_sha}...HEAD").splitlines()
+          release_affecting_files = [
+              path
+              for path in changed_files
+              if path == "wheel_test/databricks.yml"
+              or path == "wheel_test/pyproject.toml"
+              or (path.startswith("wheel_test/") and not path.startswith("wheel_test/tests/"))
+          ]
+ 
+          if not release_affecting_files:
+              print("No wheel_test release-affecting files changed. Version bump not required.")
+              sys.exit(0)
+ 
+          base_pyproject = git_output("show", f"{base_sha}:wheel_test/pyproject.toml")
+          head_pyproject = open("wheel_test/pyproject.toml", "r", encoding="utf-8").read()
+          base_version = project_version(base_pyproject)
+          head_version = project_version(head_pyproject)
+ 
+          print("wheel_test release-affecting files changed:")
+          for path in release_affecting_files:
+              print(f"- {path}")
+          print(f"Base version: {base_version}")
+          print(f"Head version: {head_version}")
+ 
+          if head_version <= base_version:
+              raise SystemExit(
+                  "wheel_test release-affecting changes require wheel_test/pyproject.toml "
+                  "project.version to increase."
+              )
+ 
+          print("wheel_test version bump is valid.")
+          PY

@@ -1,0 +1,86 @@
+name: Deploy Databricks bundle
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment (dev, prod)'
+        required: true
+        type: string
+      bundle_path:
+        description: 'Path to the bundle directory relative to repo root'
+        required: false
+        default: 'wheel_test'
+        type: string
+      volume_catalog:
+        description: 'Catalog containing the release volume'
+        required: false
+        default: 'shared'
+        type: string
+      volume_schema:
+        description: 'Schema containing the release volume'
+        required: false
+        default: 'bundle_artifacts'
+        type: string
+      volume_name:
+        description: 'Volume storing release wheels'
+        required: false
+        default: 'wheel_release'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup)[inputs.environment].host }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup)[inputs.environment].service_principal }}
+      VOLUME_CATALOG: ${{ inputs.volume_catalog }}
+      VOLUME_SCHEMA: ${{ inputs.volume_schema }}
+      VOLUME_NAME: ${{ inputs.volume_name }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Databricks CLI
+        shell: bash
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Read release version from pyproject.toml
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('${{ inputs.bundle_path }}/pyproject.toml').open('rb'))['project']['version'])")
+          echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy volume bundle
+        working-directory: ${{ inputs.bundle_path }}/bundles/volume
+        shell: bash
+        run: |
+          databricks bundle deploy -t shared \
+            --var volume_catalog=${VOLUME_CATALOG} \
+            --var volume_schema=${VOLUME_SCHEMA} \
+            --var volume_name=${VOLUME_NAME}
+
+      - name: Deploy app bundle
+        working-directory: ${{ inputs.bundle_path }}
+        env:
+          BUNDLE_VAR_release_version: ${{ steps.version.outputs.release_version }}
+          BUNDLE_VAR_volume_catalog: ${{ inputs.volume_catalog }}
+          BUNDLE_VAR_volume_schema: ${{ inputs.volume_schema }}
+          BUNDLE_VAR_volume_name: ${{ inputs.volume_name }}
+        shell: bash
+        run: databricks bundle deploy --target ${{ inputs.environment }}
