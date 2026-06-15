@@ -73,4 +73,5 @@ jobs:
           databricks bundle deploy -t shared \
             --var volume_catalog=${VOLUME_CATALOG} \
             --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME}
+            --var volume_name=${VOLUME_NAME} \
+            --var release_version=${{ steps.version.outputs.release_version }} \
