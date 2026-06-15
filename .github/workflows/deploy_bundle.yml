@@ -66,7 +66,7 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - name: Install Databricks CLI
-        uses: databricks/setup-cli@v0.238.0
+        uses: databricks/setup-cli@v1.3.0
 
       - name: Read release version from pyproject.toml
         id: version
