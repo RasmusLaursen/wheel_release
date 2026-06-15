@@ -39,7 +39,7 @@ targets:
     mode: development
     workspace:
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
-      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${workspace.current_user.short_name}/artifacts
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${workspace.current_user.short_name}
     variables:
       catalog: shared
       schema: bundle_artifacts
@@ -50,7 +50,7 @@ targets:
       user_name: ${workspace.current_user.userName}
     workspace:
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
-      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}
     variables:
       catalog: shared
       schema: bundle_artifacts
@@ -62,7 +62,7 @@ targets:
     default: true
     workspace:
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
-      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}
     variables:
       catalog: shared
       schema: bundle_artifacts
@@ -73,7 +73,7 @@ targets:
       service_principal_name: ${var.run_as}
     workspace:
       root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
-      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}
     variables:
       catalog: shared
       schema: bundle_artifacts

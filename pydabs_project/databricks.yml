@@ -50,7 +50,7 @@ targets:
     workspace:
       host: https://dbc-e3d11267-f1e6.cloud.databricks.com
       root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
-      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}
     variables:
       catalog: raw_dev
       schema: ${workspace.current_user.short_name}
@@ -59,7 +59,7 @@ targets:
     workspace:
       host: https://dbc-e3d11267-f1e6.cloud.databricks.com
       root_path: /Workspace/Users/rasmuslaursen@live.dk/.bundle/${bundle.name}/${bundle.target}
-      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}
     variables:
       catalog: raw_dev
       schema: prod
