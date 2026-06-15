@@ -1,25 +1,20 @@
 name: Deploy wheel_test
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'wheel_test/**'
-      - '!wheel_test/tests/**'
+  release:
+    types:
+      - published
   workflow_dispatch:
     inputs:
-      deploy_all:
-        description: 'Deploy all environments'
-        type: boolean
-        default: false
-      custom_selection:
-        description: 'Custom selection (comma-separated, e.g. "dev, prod")'
-        required: false
-        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
 
 permissions:
-  id-token: write
   contents: read
 
 concurrency:
@@ -27,106 +22,64 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  version_gate:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  validate_tag:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.version }}
-      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.parse.outputs.version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version-file: '.python-version'
 
-      - name: Resolve wheel_test version
-        id: version
+      - name: Parse and validate release tag
+        id: parse
         shell: bash
         run: |
           set -euo pipefail
+          TAG="${{ github.event.release.tag_name }}"
 
-          version=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('wheel_test/pyproject.toml').open('rb'))['project']['version'])")
-          tag="v${version}"
-
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-
-      - name: Ensure release tag does not exist
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          tag="${{ steps.version.outputs.tag }}"
-          git fetch --tags origin
-
-          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
-            echo "Release tag ${tag} already exists. Bump wheel_test/pyproject.toml before merging." >&2
+          if ! [[ "$TAG" =~ ^wheel_test-([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "Tag '$TAG' does not match expected format 'wheel_test-X.Y.Z'" >&2
             exit 1
           fi
 
-  deploy_dev:
-    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.deploy_all == 'true' || contains(github.event.inputs.custom_selection, 'dev'))
-    uses: ./.github/workflows/deploy_bundle.yml
-    name: Deploy dev
-    with:
-      environment: dev
-      bundle_path: wheel_test
-    secrets: inherit
+          VERSION="${BASH_REMATCH[1]}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Parsed version: $VERSION"
+
+      - name: Validate tag version matches pyproject.toml
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYPROJECT_VERSION=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('wheel_test/pyproject.toml').open('rb'))['project']['version'])")
+          TAG_VERSION="${{ steps.parse.outputs.version }}"
+
+          if [ "$PYPROJECT_VERSION" != "$TAG_VERSION" ]; then
+            echo "Version mismatch: pyproject.toml has '$PYPROJECT_VERSION' but tag is '$TAG_VERSION'" >&2
+            exit 1
+          fi
+          echo "Version '$TAG_VERSION' matches pyproject.toml"
 
   deploy_prod:
-    needs:
-      - version_gate
-    if: >
-      always() &&
-      (
-        (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.version_gate.result == 'success') ||
-        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && (github.event.inputs.deploy_all == 'true' || contains(github.event.inputs.custom_selection, 'prod')))
-      )
+    needs: validate_tag
+    if: github.event_name == 'release'
     uses: ./.github/workflows/deploy_bundle.yml
     name: Deploy prod
-    concurrency:
-      group: wheel-test-prod
-      cancel-in-progress: false
     with:
       environment: prod
       bundle_path: wheel_test
     secrets: inherit
 
-  publish_release:
-    needs:
-      - version_gate
-      - deploy_prod
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.version_gate.result == 'success' && needs.deploy_prod.result == 'success'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Create release tag and GitHub release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          tag="${{ needs.version_gate.outputs.tag }}"
-          version="${{ needs.version_gate.outputs.version }}"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "${tag}" -m "wheel_test ${version}" "${GITHUB_SHA}"
-          git push origin "refs/tags/${tag}"
-
-          gh release create "${tag}" \
-            --target "${GITHUB_SHA}" \
-            --title "wheel_test ${version}" \
-            --notes "wheel_test ${version} deployed to production."
+  deploy_manual:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/deploy_bundle.yml
+    name: Deploy ${{ github.event.inputs.environment }}
+    with:
+      environment: ${{ github.event.inputs.environment }}
+      bundle_path: wheel_test
+    secrets: inherit
