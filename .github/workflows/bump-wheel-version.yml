@@ -47,53 +47,88 @@ jobs:
           import subprocess
           import sys
           import tomllib
- 
+          from pathlib import Path
+
           from packaging.version import InvalidVersion, Version
- 
- 
+
+
           def git_output(*args: str) -> str:
               return subprocess.check_output(["git", *args], text=True)
- 
- 
+
+
           def project_version(pyproject_content: str) -> Version:
               version = tomllib.loads(pyproject_content)["project"]["version"]
               try:
                   return Version(version)
               except InvalidVersion as exc:
                   raise SystemExit(f"Invalid project.version {version!r}: {exc}") from exc
- 
- 
+
+
+          def find_bundles() -> list[Path]:
+              """Discover DAB directories: top-level dirs containing both pyproject.toml and databricks.yml."""
+              root = Path(".")
+              return [
+                  d for d in root.iterdir()
+                  if d.is_dir()
+                  and (d / "pyproject.toml").exists()
+                  and (d / "databricks.yml").exists()
+              ]
+
+
+          def bundle_affected_files(bundle: Path, changed_files: list[str]) -> list[str]:
+              prefix = f"{bundle.name}/"
+              return [
+                  path for path in changed_files
+                  if (path.startswith(prefix) and not path.startswith(f"{bundle.name}/tests/"))
+                  or path == f"{bundle.name}/pyproject.toml"
+                  or path == f"{bundle.name}/databricks.yml"
+                  or path.startswith(".github/workflows/")
+              ]
+
+
           base_sha = os.environ["BASE_SHA"]
           changed_files = git_output("diff", "--name-only", f"{base_sha}...HEAD").splitlines()
-          release_affecting_files = [
-              path
-              for path in changed_files
-              if path == "wheel_test/databricks.yml"
-              or path == "wheel_test/pyproject.toml"
-              or path.startswith(".github/workflows/")
-              or (path.startswith("wheel_test/") and not path.startswith("wheel_test/tests/"))
-          ]
- 
-          if not release_affecting_files:
-              print("No wheel_test release-affecting files changed. Version bump not required.")
+
+          bundles = find_bundles()
+          if not bundles:
+              print("No DAB bundles found in repository root.")
               sys.exit(0)
- 
-          base_pyproject = git_output("show", f"{base_sha}:wheel_test/pyproject.toml")
-          head_pyproject = open("wheel_test/pyproject.toml", "r", encoding="utf-8").read()
-          base_version = project_version(base_pyproject)
-          head_version = project_version(head_pyproject)
- 
-          print("wheel_test release-affecting files changed:")
-          for path in release_affecting_files:
-              print(f"- {path}")
-          print(f"Base version: {base_version}")
-          print(f"Head version: {head_version}")
- 
-          if head_version <= base_version:
+
+          failed = []
+
+          for bundle in sorted(bundles):
+              affected = bundle_affected_files(bundle, changed_files)
+              if not affected:
+                  print(f"[{bundle.name}] No release-affecting files changed. Skipping.")
+                  continue
+
+              print(f"\n[{bundle.name}] Release-affecting files changed:")
+              for path in affected:
+                  print(f"  - {path}")
+
+              pyproject_path = bundle / "pyproject.toml"
+              try:
+                  base_pyproject = git_output("show", f"{base_sha}:{pyproject_path}")
+              except subprocess.CalledProcessError:
+                  print(f"[{bundle.name}] WARNING: {pyproject_path} not found in base commit — skipping version check.")
+                  continue
+
+              head_pyproject = pyproject_path.read_text(encoding="utf-8")
+              base_version = project_version(base_pyproject)
+              head_version = project_version(head_pyproject)
+
+              print(f"[{bundle.name}] Base version: {base_version}")
+              print(f"[{bundle.name}] Head version: {head_version}")
+
+              if head_version <= base_version:
+                  print(f"[{bundle.name}] ERROR: version must increase (base={base_version}, head={head_version})")
+                  failed.append(bundle.name)
+              else:
+                  print(f"[{bundle.name}] Version bump is valid.")
+
+          if failed:
               raise SystemExit(
-                  "wheel_test release-affecting changes require wheel_test/pyproject.toml "
-                  "project.version to increase."
+                  f"The following bundles have release-affecting changes but no version bump: {', '.join(failed)}\n"
+                  "Increase project.version in each bundle's pyproject.toml."
               )
- 
-          print("wheel_test version bump is valid.")
           PY
