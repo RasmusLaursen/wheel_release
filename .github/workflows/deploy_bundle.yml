@@ -66,12 +66,12 @@ jobs:
           VERSION=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('${{ inputs.bundle_path }}/pyproject.toml').open('rb'))['project']['version'])")
           echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy volume bundle
-        working-directory: ${{ inputs.bundle_path }}/bundles/volume
+      - name: Deploy app bundle
+        working-directory: ${{ inputs.bundle_path }}
+        env:
+          BUNDLE_VAR_release_version: ${{ steps.version.outputs.release_version }}
+          BUNDLE_VAR_volume_catalog: ${{ inputs.volume_catalog }}
+          BUNDLE_VAR_volume_schema: ${{ inputs.volume_schema }}
+          BUNDLE_VAR_volume_name: ${{ inputs.volume_name }}
         shell: bash
-        run: |
-          databricks bundle deploy -t shared \
-            --var volume_catalog=${VOLUME_CATALOG} \
-            --var volume_schema=${VOLUME_SCHEMA} \
-            --var volume_name=${VOLUME_NAME} \
-            --var release_version=${{ steps.version.outputs.release_version }} \
+        run: databricks bundle deploy --target ${{ inputs.environment }}
