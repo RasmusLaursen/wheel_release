@@ -1,6 +1,6 @@
 [project]
 name = "pydabs_project"
-version = "0.0.2"
+version = "0.0.3"
 authors = [{ name = "rasmuslaursen@live.dk" }]
 requires-python = ">=3.10,<3.13"
 dependencies = [
