@@ -42,6 +42,20 @@ targets:
       catalog: shared
       schema: bundle_artifacts
       release_version: ${workspace.current_user.short_name}
+  shared:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: production
+    default: true
+    workspace:
+      root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${var.release_version}/bundle-artifacts
+    variables:
+      catalog: shared
+      schema: bundle_artifacts
+
   dev:
     # The default target uses 'mode: development' to create a development copy.
     # - Deployed resources get prefixed with '[dev my_user_name]'
