@@ -82,12 +82,6 @@ jobs:
           BUNDLE_VAR_volume_catalog: ${{ inputs.volume_catalog }}
           BUNDLE_VAR_volume_schema: ${{ inputs.volume_schema }}
           BUNDLE_VAR_volume_name: ${{ inputs.volume_name }}
-          # Only set run_as if a service principal is configured for this environment
-          BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup)[inputs.environment].service_principal || '' }}
+          BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup)[inputs.environment]['service-principal'] }}
         shell: bash
-        run: |
-          # Strip BUNDLE_VAR_run_as from env if empty so the bundle uses its own default
-          if [ -z "${BUNDLE_VAR_run_as:-}" ]; then
-            unset BUNDLE_VAR_run_as
-          fi
-          databricks bundle deploy --target ${{ inputs.environment }}
+        run: databricks bundle deploy --target ${{ inputs.environment }}
