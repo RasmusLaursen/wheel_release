@@ -38,26 +38,35 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup)[inputs.environment].host }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup)[inputs.environment].service_principal }}
       VOLUME_CATALOG: ${{ inputs.volume_catalog }}
       VOLUME_SCHEMA: ${{ inputs.volume_schema }}
       VOLUME_NAME: ${{ inputs.volume_name }}
 
     steps:
+      - name: Validate workspace_setup contains target environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          HOST='${{ fromJson(vars.workspace_setup)[inputs.environment].host }}'
+          if [ -z "$HOST" ]; then
+            echo "vars.workspace_setup does not contain a host for environment '${{ inputs.environment }}'" >&2
+            exit 1
+          fi
+
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version-file: '.python-version'
 
+      # uv is required by the bundle's artifacts section to build the wheel during deploy
       - name: Set up uv
         uses: astral-sh/setup-uv@v4
 
       - name: Install Databricks CLI
-        shell: bash
-        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        uses: databricks/setup-cli@v0.238.0
 
       - name: Read release version from pyproject.toml
         id: version
@@ -73,5 +82,12 @@ jobs:
           BUNDLE_VAR_volume_catalog: ${{ inputs.volume_catalog }}
           BUNDLE_VAR_volume_schema: ${{ inputs.volume_schema }}
           BUNDLE_VAR_volume_name: ${{ inputs.volume_name }}
+          # Only set run_as if a service principal is configured for this environment
+          BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup)[inputs.environment].service_principal || '' }}
         shell: bash
-        run: databricks bundle deploy --target ${{ inputs.environment }}
+        run: |
+          # Strip BUNDLE_VAR_run_as from env if empty so the bundle uses its own default
+          if [ -z "${BUNDLE_VAR_run_as:-}" ]; then
+            unset BUNDLE_VAR_run_as
+          fi
+          databricks bundle deploy --target ${{ inputs.environment }}

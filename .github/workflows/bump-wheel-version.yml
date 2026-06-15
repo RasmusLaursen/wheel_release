@@ -9,7 +9,6 @@ on:
       - synchronize
       - reopened
       - ready_for_review
-      - edited
  
 permissions:
   contents: read
@@ -71,6 +70,7 @@ jobs:
               for path in changed_files
               if path == "wheel_test/databricks.yml"
               or path == "wheel_test/pyproject.toml"
+              or path.startswith(".github/workflows/")
               or (path.startswith("wheel_test/") and not path.startswith("wheel_test/tests/"))
           ]
  
