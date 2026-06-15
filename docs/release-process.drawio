@@ -1,0 +1,372 @@
+<mxfile host="app.diagrams.net" modified="2026-06-15T00:00:00.000Z" agent="GitHub Copilot" version="21.0.0" type="device">
+  <diagram name="Release Process" id="release-process">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== SWIM LANE LABELS ===== -->
+        <!-- Developer lane -->
+        <mxCell id="lane-dev-label" value="Developer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=13;fontStyle=1;fontColor=#1a1a1a;" vertex="1" parent="1">
+          <mxGeometry x="20" y="120" width="120" height="800" as="geometry" />
+        </mxCell>
+        <!-- PR lane -->
+        <mxCell id="lane-pr-label" value="bump-wheel-version.yml&#xa;(PR Check)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=13;fontStyle=1;fontColor=#006EAF;" vertex="1" parent="1">
+          <mxGeometry x="160" y="120" width="180" height="800" as="geometry" />
+        </mxCell>
+        <!-- Release lane -->
+        <mxCell id="lane-release-label" value="deploy-wheel.yml&#xa;(Release Trigger)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=13;fontStyle=1;fontColor=#007700;" vertex="1" parent="1">
+          <mxGeometry x="360" y="120" width="200" height="800" as="geometry" />
+        </mxCell>
+        <!-- Deploy lane -->
+        <mxCell id="lane-deploy-label" value="deploy_bundle.yml&#xa;(Reusable Deploy)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=13;fontStyle=1;fontColor=#6D3FC1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="120" width="200" height="800" as="geometry" />
+        </mxCell>
+        <!-- Databricks lane -->
+        <mxCell id="lane-databricks-label" value="Databricks Workspace" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=13;fontStyle=1;fontColor=#AE4132;" vertex="1" parent="1">
+          <mxGeometry x="800" y="120" width="200" height="800" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LANE BACKGROUNDS ===== -->
+        <mxCell id="bg-dev" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;opacity=30;" vertex="1" parent="1">
+          <mxGeometry x="20" y="150" width="120" height="780" as="geometry" />
+        </mxCell>
+        <mxCell id="bg-pr" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;opacity=20;" vertex="1" parent="1">
+          <mxGeometry x="160" y="150" width="180" height="780" as="geometry" />
+        </mxCell>
+        <mxCell id="bg-release" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;opacity=20;" vertex="1" parent="1">
+          <mxGeometry x="360" y="150" width="200" height="780" as="geometry" />
+        </mxCell>
+        <mxCell id="bg-deploy" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;opacity=20;" vertex="1" parent="1">
+          <mxGeometry x="580" y="150" width="200" height="780" as="geometry" />
+        </mxCell>
+        <mxCell id="bg-databricks" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;opacity=20;" vertex="1" parent="1">
+          <mxGeometry x="800" y="150" width="200" height="780" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DEVELOPER STEPS ===== -->
+
+        <!-- 1. Bump version in pyproject.toml -->
+        <mxCell id="dev-1" value="1. Bump version in&#xa;wheel_test/pyproject.toml&#xa;e.g. 0.0.3 → 0.0.4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="180" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Open PR to main -->
+        <mxCell id="dev-2" value="2. Open PR&#xa;to main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="320" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Merge PR -->
+        <mxCell id="dev-3" value="3. Merge PR&#xa;to main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="530" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Create GitHub Release -->
+        <mxCell id="dev-4" value="4. Create GitHub Release&#xa;Tag: wheel_test-0.0.4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#333333;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="640" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== PR CHECK WORKFLOW ===== -->
+
+        <!-- Trigger: PR opened/synchronize -->
+        <mxCell id="pr-trigger" value="Trigger:&#xa;PR opened / push to PR" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="170" y="310" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Scan changed DAB dirs -->
+        <mxCell id="pr-scan" value="Scan for DABs with&#xa;changed files" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="170" y="390" width="160" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Files changed? -->
+        <mxCell id="pr-changed" value="Release-affecting&#xa;files changed?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="175" y="450" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Skip -->
+        <mxCell id="pr-skip" value="Skip ✓" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="170" y="540" width="70" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- Version bumped? -->
+        <mxCell id="pr-version" value="Version in&#xa;pyproject.toml&#xa;increased?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="175" y="590" width="150" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Fail -->
+        <mxCell id="pr-fail" value="❌ FAIL&#xa;Version must increase" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="170" y="680" width="160" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Pass -->
+        <mxCell id="pr-pass" value="✅ PASS&#xa;Version bump valid" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="170" y="740" width="160" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== RELEASE WORKFLOW ===== -->
+
+        <!-- Release trigger -->
+        <mxCell id="rel-trigger" value="Trigger:&#xa;GitHub Release published&#xa;(tag: wheel_test-X.Y.Z)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="635" width="185" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Validate tag format -->
+        <mxCell id="rel-tagformat" value="Validate tag format&#xa;wheel_test-X.Y.Z ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="367" y="710" width="181" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Tag fail -->
+        <mxCell id="rel-tagfail" value="❌ FAIL&#xa;Wrong tag format" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="800" width="160" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Checkout tag commit -->
+        <mxCell id="rel-checkout" value="Checkout tag commit&#xa;(exact commit)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="710" width="175" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Version match? -->
+        <mxCell id="rel-match" value="Tag version ==&#xa;pyproject.toml&#xa;version?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="775" width="175" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Match fail -->
+        <mxCell id="rel-matchfail" value="❌ FAIL&#xa;Version mismatch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="860" width="160" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DEPLOY_BUNDLE WORKFLOW ===== -->
+
+        <!-- deploy_bundle trigger -->
+        <mxCell id="dep-trigger" value="Called by deploy_prod&#xa;(environment=prod)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="587" y="180" width="165" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Validate workspace_setup -->
+        <mxCell id="dep-wsvalidate" value="Validate&#xa;workspace_setup host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="587" y="255" width="165" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Checkout, setup Python, uv, CLI -->
+        <mxCell id="dep-setup" value="Checkout code&#xa;Setup Python + uv&#xa;Install Databricks CLI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="587" y="320" width="165" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Read version -->
+        <mxCell id="dep-version" value="Read version from&#xa;pyproject.toml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="587" y="395" width="165" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- databricks bundle deploy -->
+        <mxCell id="dep-deploy" value="databricks bundle deploy&#xa;--target prod&#xa;(builds wheel + uploads&#xa; to volume artifact_path)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="587" y="460" width="165" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DATABRICKS ===== -->
+
+        <!-- Volume -->
+        <mxCell id="db-volume" value="Unity Catalog Volume&#xa;/Volumes/shared/&#xa;bundle_artifacts/&#xa;wheel_release/0.0.4/&#xa;bundle-artifacts/" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="810" y="420" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Job deployed -->
+        <mxCell id="db-job" value="Databricks Job&#xa;sample_job&#xa;(prod)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="810" y="540" width="170" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Job reads wheel -->
+        <mxCell id="db-wheel" value="Job reads wheel from volume&#xa;at runtime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="810" y="610" width="170" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ===== MANUAL DISPATCH PATH ===== -->
+        <mxCell id="manual-trigger" value="Manual Dispatch&#xa;(workflow_dispatch)&#xa;dev only" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="365" y="180" width="185" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ARROWS ===== -->
+
+        <!-- Dev: bump version → open PR -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dev-1" target="dev-2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Dev: open PR → PR trigger -->
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dev-2" target="pr-trigger" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PR: trigger → scan -->
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-trigger" target="pr-scan" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PR: scan → changed? -->
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-scan" target="pr-changed" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PR: changed? No → skip -->
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-changed" target="pr-skip" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="180" y="480" /><mxPoint x="205" y="480" /></Array>
+        </mxCell>
+        <mxCell id="e5-label" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e5">
+          <mxGeometry x="-0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PR: changed? Yes → version? -->
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-changed" target="pr-version" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6-label" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e6">
+          <mxGeometry x="0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PR: version? No → fail -->
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-version" target="pr-fail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7-label" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e7">
+          <mxGeometry x="0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PR: version? Yes → pass -->
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-version" target="pr-pass" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="340" y="622" /><mxPoint x="340" y="760" /><mxPoint x="330" y="760" /></Array>
+        </mxCell>
+        <mxCell id="e8-label" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e8">
+          <mxGeometry x="-0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Dev: merge PR -->
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-pass" target="dev-3" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="170" y="760" /><mxPoint x="80" y="760" /><mxPoint x="80" y="555" /></Array>
+        </mxCell>
+
+        <!-- Dev: merge → create release -->
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dev-3" target="dev-4" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Dev: create release → release trigger -->
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dev-4" target="rel-trigger" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Release: trigger → validate tag format -->
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-trigger" target="rel-tagformat" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Release: invalid format → fail -->
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-tagformat" target="rel-tagfail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="370" y="742" /><mxPoint x="370" y="820" /></Array>
+        </mxCell>
+        <mxCell id="e13-label" value="Invalid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e13">
+          <mxGeometry x="0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Release: valid format → checkout -->
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-tagformat" target="rel-checkout" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="548" y="742" /><mxPoint x="648" y="742" /></Array>
+        </mxCell>
+        <mxCell id="e14-label" value="Valid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e14">
+          <mxGeometry x="-0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Release: checkout → version match? -->
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-checkout" target="rel-match" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Release: no match → fail -->
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-match" target="rel-matchfail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16-label" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e16">
+          <mxGeometry x="0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Release: match → deploy_bundle (calls) -->
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;" edge="1" source="rel-match" target="dep-trigger" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="670" y="807" /><mxPoint x="670" y="205" /></Array>
+        </mxCell>
+        <mxCell id="e17-label" value="Yes → calls deploy_bundle.yml" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e17">
+          <mxGeometry x="-0.1" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Manual dispatch → deploy_bundle -->
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;" edge="1" source="manual-trigger" target="dep-trigger" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="550" y="207" /><mxPoint x="590" y="207" /></Array>
+        </mxCell>
+        <mxCell id="e18-label" value="calls deploy_bundle.yml" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e18">
+          <mxGeometry x="-0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- deploy_bundle: trigger → validate ws -->
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-trigger" target="dep-wsvalidate" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- deploy_bundle: validate → setup -->
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-wsvalidate" target="dep-setup" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- deploy_bundle: setup → read version -->
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-setup" target="dep-version" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- deploy_bundle: read version → deploy -->
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-version" target="dep-deploy" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- deploy → volume -->
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-deploy" target="db-volume" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23-label" value="uploads wheel" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e23">
+          <mxGeometry x="-0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- deploy → job -->
+        <mxCell id="e24" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-deploy" target="db-job" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="670" y="527" /><mxPoint x="670" y="565" /><mxPoint x="810" y="565" /></Array>
+        </mxCell>
+        <mxCell id="e24-label" value="deploys job" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e24">
+          <mxGeometry x="-0.2" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- job → wheel -->
+        <mxCell id="e25" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="db-job" target="db-wheel" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- wheel ← volume (job reads from volume) -->
+        <mxCell id="e26" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="db-wheel" target="db-volume" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+          <Array as="points"><mxPoint x="895" y="633" /><mxPoint x="895" y="510" /></Array>
+        </mxCell>
+        <mxCell id="e26-label" value="reads whl at runtime" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e26">
+          <mxGeometry x="-0.3" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== TITLE ===== -->
+        <mxCell id="title" value="wheel_test Release Process" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="60" width="980" height="40" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
