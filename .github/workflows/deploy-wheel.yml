@@ -4,8 +4,18 @@ on:
   release:
     types:
       - published
+  release:
+    types:
+      - published
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
       environment:
         description: 'Target environment'
         required: true
@@ -24,6 +34,8 @@ concurrency:
 jobs:
   validate_tag:
     if: github.event_name == 'release'
+  validate_tag:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -38,9 +50,21 @@ jobs:
 
       - name: Parse and validate release tag
         id: parse
+      - name: Parse and validate release tag
+        id: parse
         shell: bash
         run: |
           set -euo pipefail
+          TAG="${{ github.event.release.tag_name }}"
+
+          if ! [[ "$TAG" =~ ^wheel_test-([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "Tag '$TAG' does not match expected format 'wheel_test-X.Y.Z'" >&2
+            exit 1
+          fi
+
+          VERSION="${BASH_REMATCH[1]}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Parsed version: $VERSION"
           TAG="${{ github.event.release.tag_name }}"
 
           if ! [[ "$TAG" =~ ^wheel_test-([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
@@ -61,11 +85,19 @@ jobs:
 
           if [ "$PYPROJECT_VERSION" != "$TAG_VERSION" ]; then
             echo "Version mismatch: pyproject.toml has '$PYPROJECT_VERSION' but tag is '$TAG_VERSION'" >&2
+          PYPROJECT_VERSION=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('wheel_test/pyproject.toml').open('rb'))['project']['version'])")
+          TAG_VERSION="${{ steps.parse.outputs.version }}"
+
+          if [ "$PYPROJECT_VERSION" != "$TAG_VERSION" ]; then
+            echo "Version mismatch: pyproject.toml has '$PYPROJECT_VERSION' but tag is '$TAG_VERSION'" >&2
             exit 1
           fi
           echo "Version '$TAG_VERSION' matches pyproject.toml"
+          echo "Version '$TAG_VERSION' matches pyproject.toml"
 
   deploy_prod:
+    needs: validate_tag
+    if: github.event_name == 'release'
     needs: validate_tag
     if: github.event_name == 'release'
     uses: ./.github/workflows/deploy_bundle.yml
@@ -75,6 +107,14 @@ jobs:
       bundle_path: wheel_test
     secrets: inherit
 
+  deploy_manual:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/deploy_bundle.yml
+    name: Deploy ${{ github.event.inputs.environment }}
+    with:
+      environment: ${{ github.event.inputs.environment }}
+      bundle_path: wheel_test
+    secrets: inherit
   deploy_manual:
     if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/deploy_bundle.yml
