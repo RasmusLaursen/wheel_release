@@ -9,23 +9,7 @@ on:
         type: string
       bundle_path:
         description: 'Path to the bundle directory relative to repo root'
-        required: false
-        default: 'wheel_test'
-        type: string
-      volume_catalog:
-        description: 'Catalog containing the release volume'
-        required: false
-        default: 'shared'
-        type: string
-      volume_schema:
-        description: 'Schema containing the release volume'
-        required: false
-        default: 'bundle_artifacts'
-        type: string
-      volume_name:
-        description: 'Volume storing release wheels'
-        required: false
-        default: 'wheel_release'
+        required: true
         type: string
 
 permissions:
@@ -38,9 +22,6 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ fromJson(vars.workspace_setup)[inputs.environment].host }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      VOLUME_CATALOG: ${{ inputs.volume_catalog }}
-      VOLUME_SCHEMA: ${{ inputs.volume_schema }}
-      VOLUME_NAME: ${{ inputs.volume_name }}
 
     steps:
       - name: Validate workspace_setup contains target environment
@@ -55,6 +36,18 @@ jobs:
 
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Validate bundle_path is a DAB directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUNDLE_PATH='${{ inputs.bundle_path }}'
+          if [ ! -f "${BUNDLE_PATH}/pyproject.toml" ] || [ ! -f "${BUNDLE_PATH}/databricks.yml" ]; then
+            echo "'${BUNDLE_PATH}' is not a valid DAB directory (missing pyproject.toml or databricks.yml)" >&2
+            echo "Available DABs:" >&2
+            find . -maxdepth 2 -name 'databricks.yml' -printf '  %h\n' | sed 's|^\./||' >&2
+            exit 1
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -79,9 +72,6 @@ jobs:
         working-directory: ${{ inputs.bundle_path }}
         env:
           BUNDLE_VAR_release_version: ${{ steps.version.outputs.release_version }}
-          BUNDLE_VAR_volume_catalog: ${{ inputs.volume_catalog }}
-          BUNDLE_VAR_volume_schema: ${{ inputs.volume_schema }}
-          BUNDLE_VAR_volume_name: ${{ inputs.volume_name }}
           BUNDLE_VAR_run_as: ${{ fromJson(vars.workspace_setup)[inputs.environment]['service-principal'] }}
         shell: bash
         run: databricks bundle deploy --target ${{ inputs.environment }}

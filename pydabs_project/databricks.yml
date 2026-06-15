@@ -24,6 +24,20 @@ variables:
     description: The catalog to use
   schema:
     description: The schema to use
+  release_version:
+    description: Release version used for the deployed wheel path
+    default: 0.0.1
+  volume_catalog:
+    description: Catalog that contains the shared release volume
+    default: shared
+  volume_schema:
+    description: Schema that contains the shared release volume
+    default: bundle_artifacts
+  volume_name:
+    description: Volume that stores released wheel files
+    default: wheel_release
+  run_as:
+    description: Service principal name used as run_as identity for production deployments
 
 targets:
   dev:
@@ -35,6 +49,8 @@ targets:
     default: true
     workspace:
       host: https://dbc-e3d11267-f1e6.cloud.databricks.com
+      root_path: /Workspace/Shared/${workspace.current_user.short_name}/.bundle/${bundle.name}/${bundle.target}
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
     variables:
       catalog: raw_dev
       schema: ${workspace.current_user.short_name}
@@ -42,8 +58,8 @@ targets:
     mode: production
     workspace:
       host: https://dbc-e3d11267-f1e6.cloud.databricks.com
-      # We explicitly deploy to /Workspace/Users/rasmuslaursen@live.dk to make sure we only have a single copy.
       root_path: /Workspace/Users/rasmuslaursen@live.dk/.bundle/${bundle.name}/${bundle.target}
+      artifact_path: /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts
     variables:
       catalog: raw_dev
       schema: prod

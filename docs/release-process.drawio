@@ -26,16 +26,16 @@
 
         <!-- ===== REPO STRUCTURE LEGEND ===== -->
         <mxCell id="repo-box" value="Repository Structure" style="rounded=1;fillColor=#f0f0f0;strokeColor=#888888;fontSize=12;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
-          <mxGeometry x="990" y="110" width="280" height="130" as="geometry" />
+          <mxGeometry x="990" y="110" width="310" height="130" as="geometry" />
         </mxCell>
         <mxCell id="repo-dab1" value="📦 wheel_test/&#xa;  pyproject.toml&#xa;  databricks.yml" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1000" y="155" width="120" height="55" as="geometry" />
+          <mxGeometry x="1000" y="155" width="130" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="repo-dab2" value="📦 another_dab/&#xa;  pyproject.toml&#xa;  databricks.yml" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1140" y="155" width="120" height="55" as="geometry" />
+        <mxCell id="repo-dab2" value="📦 pydabs_project/&#xa;  pyproject.toml&#xa;  databricks.yml" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="155" width="140" height="55" as="geometry" />
         </mxCell>
         <mxCell id="repo-note" value="Any top-level dir with pyproject.toml&#xa;+ databricks.yml = auto-discovered DAB" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=2;align=center;" vertex="1" parent="1">
-          <mxGeometry x="990" y="220" width="280" height="30" as="geometry" />
+          <mxGeometry x="990" y="220" width="310" height="30" as="geometry" />
         </mxCell>
 
         <!-- ===== DEVELOPER COLUMN ===== -->
@@ -81,34 +81,34 @@
           <mxGeometry x="355" y="648" width="80" height="40" as="geometry" />
         </mxCell>
 
-        <mxCell id="pr-fail" value="❌ FAIL — list all&#xa;DABs missing bump" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="180" y="760" width="170" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="pr-pass" value="✅ PASS&#xa;All affected DABs bumped" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="180" y="820" width="170" height="40" as="geometry" />
-        </mxCell>
         <mxCell id="pr-failures" value="Any failures?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="185" y="750" width="130" height="50" as="geometry" />
         </mxCell>
+        <mxCell id="pr-fail" value="❌ FAIL — list all&#xa;DABs missing bump" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="180" y="820" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pr-pass" value="✅ PASS&#xa;All affected DABs bumped" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="180" y="880" width="170" height="40" as="geometry" />
+        </mxCell>
 
         <!-- ===== RELEASE COLUMN ===== -->
-        <mxCell id="manual-trigger" value="Manual Dispatch&#xa;(dev only)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="480" y="160" width="160" height="50" as="geometry" />
+        <mxCell id="manual-trigger" value="Manual Dispatch&#xa;(dev only)&#xa;env + bundle_path input" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="478" y="155" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="rel-trigger" value="Trigger:&#xa;GitHub Release published&#xa;(tag: &lt;dab&gt;-X.Y.Z)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="rel-trigger" value="Trigger:&#xa;GitHub Release published&#xa;(tag: &lt;dab_name&gt;-X.Y.Z)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="478" y="780" width="185" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="rel-tagformat" value="Tag matches&#xa;&lt;dab_name&gt;-X.Y.Z ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="480" y="860" width="175" height="60" as="geometry" />
+        <mxCell id="rel-tagformat" value="Tag matches&#xa;^([a-zA-Z0-9_]+)-X.Y.Z ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="860" width="175" height="65" as="geometry" />
         </mxCell>
         <mxCell id="rel-tagfail" value="❌ FAIL&#xa;Wrong tag format" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="480" y="945" width="155" height="40" as="geometry" />
+          <mxGeometry x="480" y="950" width="155" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="rel-match" value="Tag version ==&#xa;pyproject.toml?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="670" y="860" width="165" height="60" as="geometry" />
+        <mxCell id="rel-match" value="Tag version ==&#xa;&lt;dab&gt;/pyproject.toml?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="668" y="860" width="175" height="65" as="geometry" />
         </mxCell>
         <mxCell id="rel-matchfail" value="❌ FAIL&#xa;Version mismatch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="670" y="945" width="155" height="40" as="geometry" />
+          <mxGeometry x="668" y="950" width="155" height="40" as="geometry" />
         </mxCell>
 
         <!-- ===== DEPLOY COLUMN ===== -->
@@ -118,39 +118,50 @@
         <mxCell id="dep-wsvalidate" value="Validate workspace_setup&#xa;has host for environment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="730" y="235" width="185" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="dep-setup" value="Checkout · Python · uv&#xa;Databricks CLI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="730" y="300" width="185" height="45" as="geometry" />
+        <mxCell id="dep-checkout" value="Checkout repo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="730" y="300" width="185" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-validate" value="Validate bundle_path&#xa;is a real DAB directory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="730" y="355" width="185" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dep-setup" value="Python · uv · Databricks CLI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="730" y="415" width="185" height="35" as="geometry" />
         </mxCell>
         <mxCell id="dep-version" value="Read version from&#xa;bundle's pyproject.toml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="730" y="365" width="185" height="45" as="geometry" />
+          <mxGeometry x="730" y="470" width="185" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="dep-deploy" value="databricks bundle deploy&#xa;--target &lt;environment&gt;&#xa;&#xa;Builds wheel → uploads to&#xa;volume artifact_path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="730" y="430" width="185" height="75" as="geometry" />
+        <mxCell id="dep-deploy" value="databricks bundle deploy&#xa;--target &lt;environment&gt;&#xa;&#xa;Builds wheel → uploads to&#xa;/Volumes/.../&lt;bundle.name&gt;/&lt;version&gt;/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="730" y="530" width="185" height="80" as="geometry" />
         </mxCell>
 
-        <!-- ===== DATABRICKS — DAB 1 ===== -->
+        <!-- ===== DATABRICKS — DAB 1 (wheel_test) ===== -->
         <mxCell id="dab1-header" value="DAB: wheel_test" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="995" y="350" width="380" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="dab1-volume" value="UC Volume&#xa;/Volumes/shared/bundle_artifacts/&#xa;wheel_release/&lt;version&gt;/bundle-artifacts/" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1000" y="390" width="200" height="90" as="geometry" />
+        <mxCell id="dab1-volume" value="UC Volume&#xa;/Volumes/shared/bundle_artifacts/&#xa;wheel_release/wheel_test/&lt;version&gt;/bundle-artifacts/" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="390" width="220" height="90" as="geometry" />
         </mxCell>
         <mxCell id="dab1-job" value="Databricks Job&#xa;sample_job (prod)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="390" width="145" height="50" as="geometry" />
+          <mxGeometry x="1245" y="390" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="dab1-reads" value="reads whl at runtime" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="1100" y="455" width="170" height="20" as="geometry" />
+          <mxGeometry x="1120" y="455" width="155" height="20" as="geometry" />
         </mxCell>
 
-        <!-- ===== DATABRICKS — DAB 2 ===== -->
-        <mxCell id="dab2-header" value="DAB: another_dab  (future / example)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="995" y="510" width="380" height="30" as="geometry" />
+        <!-- ===== DATABRICKS — DAB 2 (pydabs_project) ===== -->
+        <mxCell id="dab2-header" value="DAB: pydabs_project" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="995" y="520" width="380" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="dab2-volume" value="UC Volume&#xa;/Volumes/shared/bundle_artifacts/&#xa;another_dab/&lt;version&gt;/bundle-artifacts/" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1000" y="550" width="200" height="90" as="geometry" />
+        <mxCell id="dab2-volume" value="UC Volume&#xa;/Volumes/shared/bundle_artifacts/&#xa;wheel_release/pydabs_project/&lt;version&gt;/bundle-artifacts/" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="560" width="220" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="dab2-job" value="Databricks Job&#xa;another_job (prod)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="1220" y="550" width="145" height="50" as="geometry" />
+        <mxCell id="dab2-job" value="Databricks Job&#xa;(pydabs_project prod)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1245" y="560" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- volume path note -->
+        <mxCell id="vol-path-note" value="artifact_path = /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts&#xa;Each DAB namespaced by ${bundle.name} — no collisions in shared volume" style="text;html=1;strokeColor=#888888;fillColor=#f9f9f9;fontSize=10;fontStyle=2;align=left;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="995" y="670" width="870" height="35" as="geometry" />
         </mxCell>
 
         <!-- ===== EDGES ===== -->
@@ -175,7 +186,7 @@
         </mxCell>
         <mxCell id="e-version-ok-lbl" value="Yes" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-version-ok"><mxGeometry x="0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-collect-failures" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-collect" target="pr-failures" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="395" y="695" /><mxPoint x="395" y="780" /><mxPoint x="315" y="780" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="395" y="695" /><mxPoint x="395" y="775" /><mxPoint x="315" y="775" /></Array></mxGeometry>
         </mxCell>
         <mxCell id="e-failures-fail" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-failures" target="pr-fail" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e-failures-fail-lbl" value="Yes" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-failures-fail"><mxGeometry x="0.2" relative="1" as="geometry" /></mxCell>
@@ -184,37 +195,39 @@
         </mxCell>
         <mxCell id="e-failures-pass-lbl" value="No" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-failures-pass"><mxGeometry x="-0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-pass-merge" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="pr-pass" target="dev-3" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="165" y="840" /><mxPoint x="85" y="840" /><mxPoint x="85" y="682" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="165" y="900" /><mxPoint x="85" y="900" /><mxPoint x="85" y="682" /></Array></mxGeometry>
         </mxCell>
 
         <!-- release flow -->
         <mxCell id="e-reltrig-tagfmt" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-trigger" target="rel-tagformat" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e-tagfmt-fail" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-tagformat" target="rel-tagfail" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="890" /><mxPoint x="480" y="965" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="892" /><mxPoint x="480" y="970" /></Array></mxGeometry>
         </mxCell>
         <mxCell id="e-tagfmt-fail-lbl" value="Invalid" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-tagfmt-fail"><mxGeometry x="0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-tagfmt-match" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-tagformat" target="rel-match" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="655" y="890" /><mxPoint x="752" y="890" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="655" y="892" /><mxPoint x="755" y="892" /></Array></mxGeometry>
         </mxCell>
         <mxCell id="e-tagfmt-match-lbl" value="Valid" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-tagfmt-match"><mxGeometry x="-0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-match-fail" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="rel-match" target="rel-matchfail" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e-match-fail-lbl" value="No" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-match-fail"><mxGeometry x="0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-match-deploy" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;" edge="1" source="rel-match" target="dep-trigger" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="752" y="860" /><mxPoint x="752" y="185" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="755" y="860" /><mxPoint x="755" y="185" /></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e-match-deploy-lbl" value="Yes → calls deploy_bundle.yml (prod)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-match-deploy"><mxGeometry x="-0.3" relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-match-deploy-lbl" value="Yes → calls deploy_bundle.yml (prod)&#xa;bundle_path = parsed dab_name from tag" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-match-deploy"><mxGeometry x="-0.3" relative="1" as="geometry" /></mxCell>
 
         <!-- manual → deploy -->
         <mxCell id="e-manual-deploy" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;" edge="1" source="manual-trigger" target="dep-trigger" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="640" y="185" /><mxPoint x="730" y="185" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="663" y="185" /><mxPoint x="730" y="185" /></Array></mxGeometry>
         </mxCell>
         <mxCell id="e-manual-deploy-lbl" value="calls deploy_bundle.yml (dev)" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-manual-deploy"><mxGeometry x="-0.2" relative="1" as="geometry" /></mxCell>
 
         <!-- deploy internal flow -->
         <mxCell id="e-dep1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-trigger" target="dep-wsvalidate" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e-dep2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-wsvalidate" target="dep-setup" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e-dep3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-setup" target="dep-version" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="e-dep4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-version" target="dep-deploy" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-dep2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-wsvalidate" target="dep-checkout" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-dep3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-checkout" target="dep-validate" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-dep4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-validate" target="dep-setup" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-dep5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-setup" target="dep-version" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-dep6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-version" target="dep-deploy" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
 
         <!-- deploy → databricks dab1 -->
         <mxCell id="e-dep-dab1vol" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-deploy" target="dab1-volume" parent="1">
@@ -222,15 +235,10 @@
         </mxCell>
         <mxCell id="e-dep-dab1vol-lbl" value="wheel uploaded" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-dep-dab1vol"><mxGeometry x="-0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-dep-dab1job" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dep-deploy" target="dab1-job" parent="1">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="840" y="505" /><mxPoint x="840" y="415" /><mxPoint x="1220" y="415" /></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="840" y="610" /><mxPoint x="840" y="415" /><mxPoint x="1245" y="415" /></Array></mxGeometry>
         </mxCell>
         <mxCell id="e-dep-dab1job-lbl" value="job deployed" style="edgeLabel;html=1;fontSize=10;" vertex="1" connectable="0" parent="e-dep-dab1job"><mxGeometry x="-0.2" relative="1" as="geometry" /></mxCell>
         <mxCell id="e-dab1-reads" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="dab1-job" target="dab1-volume" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
-
-        <!-- note: dab2 independently triggered by its own release -->
-        <mxCell id="e-dab2-note" value="another_dab deployed independently&#xa;via its own release tag (another_dab-X.Y.Z)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=2;align=center;" vertex="1" parent="1">
-          <mxGeometry x="995" y="650" width="380" height="30" as="geometry" />
-        </mxCell>
 
       </root>
     </mxGraphModel>
