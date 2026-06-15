@@ -38,5 +38,6 @@ resources:
       environments:
         - environment_key: default
           spec:
+            client: "1"
             dependencies:
               - /Volumes/${var.volume_catalog}/${var.volume_schema}/${var.volume_name}/${bundle.name}/${var.release_version}/bundle-artifacts/wheel_test-${var.release_version}-py3-none-any.whl
