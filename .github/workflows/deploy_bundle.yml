@@ -68,6 +68,17 @@ jobs:
           VERSION=$(python -c "import tomllib; from pathlib import Path; print(tomllib.load(Path('${{ inputs.bundle_path }}/pyproject.toml').open('rb'))['project']['version'])")
           echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Create Python virtualenv for bundle (required by PyDABs bundles)
+        shell: bash
+        working-directory: ${{ inputs.bundle_path }}
+        run: |
+          if grep -q 'venv_path' databricks.yml; then
+            echo "Bundle uses venv_path — running uv sync to create .venv"
+            uv sync
+          else
+            echo "Bundle does not use venv_path — skipping uv sync"
+          fi
+
       - name: Deploy app bundle
         working-directory: ${{ inputs.bundle_path }}
         env:
